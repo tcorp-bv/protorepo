@@ -2,8 +2,10 @@ image: golang:latest
 
 # Setup base dependencies
 before_script:
-  - apt-get update && apt-get install -y unzip git
+  - apt-get update && apt-get install -y unzip git make
   - git config --global credential.helper '!f() { sleep 1; echo "username=${GIT_USER}"; echo "password=${GIT_PASSWORD}"; }; f'
+  - git config --global user.name "${GIT_USER}"
+  - git config --global user.email "${GIT_EMAIL}"
 
 stages:
   - deploy
