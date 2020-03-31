@@ -162,7 +162,7 @@ func (h *Handler) handleLang(def PackageDef, lang LanguageDef) error {
 		}
 	}
 
-	addCmd := exec.Command("git", "-C", gitDir, "add", "-u", ".")
+	addCmd := exec.Command("git", "-C", gitDir, "add", "-A", ".")
 	if err := addCmd.Run(); err != nil {
 		return fmt.Errorf("git add error: %v", err)
 	}
