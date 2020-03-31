@@ -9,5 +9,4 @@ ensure-dependencies:
 	curl -sfL https://github.com/protocolbuffers/protobuf/releases/download/v3.11.4/protoc-3.11.4-linux-x86_64.zip | tee  /tmp/protoc/protoc.zip | sha256sum -c /tmp/protoc/protosum.txt
 	unzip  /tmp/protoc/protoc.zip -d /tmp/protoc/
 	export PATH=$PATH:/tmp/protoc/protoc/bin
-	rm -rf /tmp/protoc
 	go get -u github.com/golang/protobuf/protoc-gen-go
