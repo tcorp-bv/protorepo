@@ -1,0 +1,3 @@
+languages:
+  - language: go
+    repository: gitlab.com/tcorpbv/greeter-proto-go

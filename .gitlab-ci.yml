@@ -1,0 +1,14 @@
+image: golang:latest
+
+# Setup base dependencies
+before_script:
+  - apt-get update && apt-get install -y unzip git
+
+stages:
+  - deploy
+
+# Deploy the generated code
+deploy:
+  stage: deploy
+  script:
+    - make deploy
