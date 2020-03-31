@@ -31,7 +31,7 @@ GOPRIVATE=gitlab.com/<org>/*
 git config --global url."https://${GIT_USER}:${GIT_PASSWORD}@gitlab.com" .insteadOf "https://gitlab.com"
 ```
 
-** Only read this if your gitlab uses subgroups**
+**Only read this if your gitlab uses subgroups**
 
 Golang acts up if the path to the repository uses multiple "/"s. To fix this, we can add .git to the import.
 
