@@ -31,7 +31,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"strings"
 	"path/filepath"
 )
 
@@ -51,6 +50,7 @@ type Language string
 
 // Marshalled version of .proto.yaml
 type Package struct {
+	Version string `yaml:"version"`
 	Languages []LanguageDef `yaml:"languages"`
 }
 
@@ -173,19 +173,12 @@ func (h *Handler) handleLang(def PackageDef, lang LanguageDef) error {
 		return nil // We do nothing when the commit returns an error, we assume this means "nothing to commit"
 	}
 	
-	getHashCmd := exec.Command("git", "-C", gitDir, "log", "--pretty=%h", "-1")
-	hash, err := getHashCmd.CombinedOutput(); 
-	if err != nil {
-			return fmt.Errorf("git get commit hash error: %v", hash)
-	}
-	
-	strHash := strings.TrimSuffix(string(hash), "\n")
-    tagCmd := exec.Command("git", "-C", gitDir, "tag", strHash)
+    tagCmd := exec.Command("git", "-C", gitDir, "tag", def.Package.Version)
     if str, err := tagCmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("git tag error: %v, %s", err, string(str))
 	}
 	
-	fmt.Printf("Deploying %s to %s!\n", strHash, lang.RepoURI())
+	fmt.Printf("Deploying %s to %s!\n", def.Package.Version, lang.RepoURI())
 
 	pushCmd := exec.Command("git", "-C", gitDir, "push", "--tags", "origin", "master")
 	if err := pushCmd.Run(); err != nil {
@@ -197,6 +190,7 @@ func (h *Handler) handleLang(def PackageDef, lang LanguageDef) error {
 
 // Manages the deployment of the generated code
 type Handler struct {
+	Version string
 	// The path to the root directory
 	Path string
 	// All subdirectories, these may not contain a .proto.yaml file
