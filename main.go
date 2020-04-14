@@ -179,14 +179,15 @@ func (h *Handler) handleLang(def PackageDef, lang LanguageDef) error {
 			return fmt.Errorf("git get commit hash error: %v", hash)
 	}
 	
-    tagCmd := exec.Command("git", "-C", gitDir, "tag", strings.TrimSuffix(string(hash), "\n"))
+	strHash := strings.TrimSuffix(string(hash), "\n")
+    tagCmd := exec.Command("git", "-C", gitDir, "tag", strHash)
     if str, err := tagCmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("git tag error: %v, %s", err, string(str))
 	}
 	
-	fmt.Printf("Deploying %s to %s!\n", hash, lang.RepoURI())
+	fmt.Printf("Deploying %s to %s!\n", strHash, lang.RepoURI())
 
-	pushCmd := exec.Command("git", "-C", gitDir, "push", "origin", "master")
+	pushCmd := exec.Command("git", "-C", gitDir, "push", "--tags", "origin", "master")
 	if err := pushCmd.Run(); err != nil {
 		return fmt.Errorf("git push error: %v", err)
 	}
