@@ -156,7 +156,7 @@ func (h *Handler) handleLang(def PackageDef, lang LanguageDef) error {
 
 		protocCmd := exec.Command("protoc", args...)
 		fmt.Printf("Executing %s\n", protocCmd.String())
-		if str, err := protocCmd.Output(); err != nil {
+		if str, err := protocCmd.CombinedOutput(); err != nil {
 			fmt.Printf("%s\n", string(str))
 			return fmt.Errorf("protoc error: %v", err)
 		}
@@ -171,8 +171,19 @@ func (h *Handler) handleLang(def PackageDef, lang LanguageDef) error {
 	if err := commitCmd.Run(); err != nil {
 		return nil // We do nothing when the commit returns an error, we assume this means "nothing to commit"
 	}
-
-	fmt.Printf("Deploying new version to %s!\n", lang.RepoURI())
+	
+	getHashCmd := exec.Command("git", "-C", gitDir, "log", "--pretty=%h", "-1")
+	hash, err := getHashCmd.CombinedOutput(); 
+	if err != nil {
+			return fmt.Errorf("git get commit hash error: %v", hash)
+	}
+	
+    	tagCmd := exec.Command("git", "-C", gitdir, "tag", "-a", string(hash))
+    	if err := tagCmd.Run(); err != nil {
+		return fmt.Errorf("git tag error: %v", err)
+	}
+	
+	fmt.Printf("Deploying %s to %s!\n", hash, lang.RepoURI())
 
 	pushCmd := exec.Command("git", "-C", gitDir, "push", "origin", "master")
 	if err := pushCmd.Run(); err != nil {
