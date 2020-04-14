@@ -31,6 +31,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 	"path/filepath"
 )
 
@@ -178,9 +179,9 @@ func (h *Handler) handleLang(def PackageDef, lang LanguageDef) error {
 			return fmt.Errorf("git get commit hash error: %v", hash)
 	}
 	
-    	tagCmd := exec.Command("git", "-C", gitdir, "tag", "-a", string(hash))
-    	if err := tagCmd.Run(); err != nil {
-		return fmt.Errorf("git tag error: %v", err)
+    tagCmd := exec.Command("git", "-C", gitDir, "tag", strings.TrimSuffix(string(hash), "\n"))
+    if str, err := tagCmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("git tag error: %v, %s", err, string(str))
 	}
 	
 	fmt.Printf("Deploying %s to %s!\n", hash, lang.RepoURI())
